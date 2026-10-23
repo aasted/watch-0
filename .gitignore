@@ -8,3 +8,10 @@ dist.zip
 
 # Ignore installed node modules
 node_modules/
+
+# Emulator screenshots and editor/OS clutter
+screenshot*.png
+compile_commands.json
+.DS_Store
+.vscode/
+.idea/

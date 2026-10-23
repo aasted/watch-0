@@ -1,0 +1,22 @@
+{
+  "name": "minimal-pt",
+  "author": "aasted",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Mínimo",
+    "uuid": "ac51ac03-2e19-4adc-b013-f9ef943ef5b3",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["flint"],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [],
+    "resources": {
+      "media": []
+    }
+  }
+}

@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [hello-world]
+        project: [hello-world, minimal-pt]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -31,13 +31,20 @@ jobs:
       - name: Build
         run: pebble build
 
-      - name: Screenshot in emulator (best effort)
+      # Fixed times so the screenshots exercise accented names:
+      # 1793095740 = Tue 27 Oct 2026 10:09 UTC (terça, outubro),
+      # 1772920020 = Sat 7 Mar 2026 21:47 UTC (sábado, março).
+      # The clock is set before each install so the face draws that date on launch.
+      - name: Screenshots in emulator (best effort)
         continue-on-error: true
         timeout-minutes: 5
         run: |
-          pebble install --emulator flint --vnc build/*.pbw
-          sleep 5
-          pebble screenshot --emulator flint --vnc --scale 3 --no-open screenshot-flint.png
+          for t in 1793095740 1772920020; do
+            pebble emu-set-time --emulator flint --vnc $t
+            pebble install --emulator flint --vnc build/*.pbw
+            sleep 3
+            pebble screenshot --emulator flint --vnc --no-open screenshot-flint-$t.png
+          done
 
       - uses: actions/upload-artifact@v4
         with:
