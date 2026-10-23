@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # pebble-tool's bundled libpebble2 has old docstrings that trip Python 3.12+
+  # SyntaxWarnings on first import. They're upstream and harmless; hide them.
+  PYTHONWARNINGS: ignore::SyntaxWarning
+
 jobs:
   build:
     # Only build pull requests opened from branches in this repo. PRs from forks
@@ -60,6 +65,7 @@ jobs:
       - name: Print screenshots
         continue-on-error: true
         run: |
+          shopt -s nullglob
           for f in screenshot-*.png; do
             echo "::group::$f"
             base64 -w0 "$f"
@@ -81,6 +87,10 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    # One gallery update at a time; each rebases onto the latest main before pushing.
+    concurrency:
+      group: gallery
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -108,4 +118,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898231+github-actions[bot]@users.noreply.github.com"
           git commit -m "Update gallery screenshots [skip ci]"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main

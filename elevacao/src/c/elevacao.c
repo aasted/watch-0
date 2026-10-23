@@ -48,27 +48,56 @@ static TextLayer *s_day_layer;
 static TextLayer *s_date_layer;
 static uint8_t s_digits[4];
 
-static void prv_set_pixel(GBitmap *fb, int x, int y, bool white) {
-  GBitmapDataRowInfo row = gbitmap_get_data_row_info(fb, y);
-  if (x < row.min_x || x > row.max_x) {
-    return;
+// The frame buffer rows, looked up once per redraw: SDK calls are slow on the
+// watch, and calling them for every pixel trips the app watchdog.
+#define MAX_ROWS 168
+
+typedef struct {
+  GSize size;
+  bool one_bit;
+  uint8_t *data[MAX_ROWS];
+  int16_t min_x[MAX_ROWS];
+  int16_t max_x[MAX_ROWS];
+} FrameBuffer;
+
+static FrameBuffer s_frame;
+
+static void prv_frame_load(GBitmap *fb) {
+  s_frame.size = gbitmap_get_bounds(fb).size;
+  if (s_frame.size.h > MAX_ROWS) {
+    s_frame.size.h = MAX_ROWS;
   }
-  if (gbitmap_get_format(fb) == GBitmapFormat1Bit) {
-    uint8_t mask = 1 << (x % 8);
-    if (white) {
-      row.data[x / 8] |= mask;
-    } else {
-      row.data[x / 8] &= ~mask;
-    }
-  } else {
-    row.data[x] = white ? GColorWhiteARGB8 : GColorBlackARGB8;
+  s_frame.one_bit = gbitmap_get_format(fb) == GBitmapFormat1Bit;
+  for (int y = 0; y < s_frame.size.h; y++) {
+    const GBitmapDataRowInfo row = gbitmap_get_data_row_info(fb, y);
+    s_frame.data[y] = row.data;
+    s_frame.min_x[y] = row.min_x;
+    s_frame.max_x[y] = row.max_x;
   }
 }
 
-// Draws one glyph cell as a solid column: a white top face
-// and two walls (dithered and black) down to the bottom of the screen. Painter's order:
+static void prv_set_pixel(int x, int y, bool white) {
+  if (x < s_frame.min_x[y] || x > s_frame.max_x[y]) {
+    return;
+  }
+  uint8_t *data = s_frame.data[y];
+  if (s_frame.one_bit) {
+    const uint8_t mask = 1 << (x % 8);
+    if (white) {
+      data[x / 8] |= mask;
+    } else {
+      data[x / 8] &= ~mask;
+    }
+  } else {
+    data[x] = white ? GColorWhiteARGB8 : GColorBlackARGB8;
+  }
+}
+
+// Draws one glyph cell as a solid column: a white top face and two walls
+// (dithered and black) down to the bottom of the screen. Painter's order:
 // later calls draw over earlier ones.
-static void prv_draw_column(GBitmap *fb, GSize size, const Column *column) {
+static void prv_draw_column(const Column *column) {
+  const GSize size = s_frame.size;
   const int bx = OX + (column->u + column->v) * SX;
   const int by = OY + (column->u - column->v) * SY;
 
@@ -94,7 +123,7 @@ static void prv_draw_column(GBitmap *fb, GSize size, const Column *column) {
       } else {
         white = false;                     // shaded wall: solid black
       }
-      prv_set_pixel(fb, x, y, white);
+      prv_set_pixel(x, y, white);
     }
   }
 }
@@ -140,9 +169,9 @@ static void prv_canvas_update_proc(Layer *layer, GContext *ctx) {
   if (!fb) {
     return;
   }
-  const GSize size = gbitmap_get_bounds(fb).size;
+  prv_frame_load(fb);
   for (int i = 0; i < count; i++) {
-    prv_draw_column(fb, size, &columns[i]);
+    prv_draw_column(&columns[i]);
   }
   graphics_release_frame_buffer(ctx, fb);
 }
