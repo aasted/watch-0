@@ -7,6 +7,9 @@ on:
 
 jobs:
   build:
+    # Only build pull requests opened from branches in this repo. PRs from forks
+    # are skipped so outside contributors can't run code on our runners.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
