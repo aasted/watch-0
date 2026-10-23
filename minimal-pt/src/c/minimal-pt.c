@@ -22,10 +22,11 @@ static TextLayer *s_date_layer;
 
 static void prv_update_time(struct tm *tick_time) {
   static char s_time_buffer[8];
-  strftime(s_time_buffer, sizeof(s_time_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
+  const bool is_24h = clock_is_24h_style();
+  strftime(s_time_buffer, sizeof(s_time_buffer), is_24h ? "%H:%M" : "%I:%M", tick_time);
   // Drop the leading zero in 12-hour mode ("9:41", not "09:41").
   char *time_text = s_time_buffer;
-  if (!clock_is_24h_style() && time_text[0] == '0') {
+  if (!is_24h && time_text[0] == '0') {
     time_text++;
   }
   text_layer_set_text(s_time_layer, time_text);
@@ -72,7 +73,7 @@ static void prv_window_load(Window *window) {
   layer_add_child(window_layer, s_rule_layer);
 
   s_day_layer = prv_text_layer_create(window_layer, GRect(0, 106, w, 28), FONT_KEY_GOTHIC_24_BOLD);
-  s_date_layer = prv_text_layer_create(window_layer, GRect(0, 132, w, 24), FONT_KEY_GOTHIC_18);
+  s_date_layer = prv_text_layer_create(window_layer, GRect(0, 134, w, 24), FONT_KEY_GOTHIC_18);
 }
 
 static void prv_window_unload(Window *window) {
