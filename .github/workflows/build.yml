@@ -1,0 +1,48 @@
+name: Build watchfaces
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [hello-world]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libfdt1 libpixman-1-0 nodejs
+
+      - name: Install pebble-tool and SDK
+        run: |
+          uv tool install pebble-tool --python 3.13
+          pebble sdk install latest
+
+      - name: Build
+        run: pebble build
+
+      - name: Screenshot in emulator (best effort)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          pebble install --emulator flint --vnc build/*.pbw
+          sleep 5
+          pebble screenshot --emulator flint --vnc --scale 3 --no-open screenshot-flint.png
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}
+          path: |
+            ${{ matrix.project }}/build/*.pbw
+            ${{ matrix.project }}/screenshot-*.png
+          if-no-files-found: warn
