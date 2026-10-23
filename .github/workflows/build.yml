@@ -81,8 +81,8 @@ jobs:
             ${{ matrix.project }}/screenshot-*.png
           if-no-files-found: warn
 
-  # On main, commit one screenshot per face (the Tue 27 Oct 10:09 one) to
-  # screenshots/ for the README gallery.
+  # On main, commit one screenshot per face (the Tue 27 Oct 10:09 one), upscaled
+  # 3x, to screenshots/ for the README gallery.
   gallery:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -100,6 +100,8 @@ jobs:
         with:
           path: artifacts
 
+      - uses: astral-sh/setup-uv@v6
+
       - name: Commit updated screenshots
         run: |
           mkdir -p screenshots
@@ -107,7 +109,7 @@ jobs:
             name=$(basename "$dir")
             src="$dir/screenshot-flint-1793095740.png"
             if [ -f "$src" ]; then
-              cp "$src" "screenshots/$name.png"
+              uv run --no-project --with pillow==12.3.0 python tools/upscale.py "$src" "screenshots/$name.png"
             fi
           done
           git add screenshots
