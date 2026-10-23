@@ -2,8 +2,12 @@ name: Build watchfaces
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -28,16 +32,15 @@ jobs:
 
       - name: Install pebble-tool and SDK
         run: |
-          uv tool install pebble-tool --python 3.13
+          uv tool install pebble-tool==5.0.40 --python 3.13
           pebble sdk install latest
 
       - name: Build
         run: pebble build
 
-      # Fixed times so the screenshots exercise accented names:
-      # 1793095740 = Tue 27 Oct 2026 10:09 UTC (terça, outubro),
-      # 1772920020 = Sat 7 Mar 2026 21:47 UTC (sábado, março).
-      # The clock is set before each install so the face draws that date on launch.
+      # Fixed clock times so screenshots are reproducible:
+      # 1793095740 = Tue 27 Oct 2026 10:09 UTC, 1772920020 = Sat 7 Mar 2026 21:47 UTC.
+      # The clock is set before each install so the face draws that time on launch.
       - name: Screenshots in emulator (best effort)
         continue-on-error: true
         timeout-minutes: 5
