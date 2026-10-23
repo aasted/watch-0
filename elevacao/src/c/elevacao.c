@@ -6,8 +6,8 @@
 // The time is four 3x5 block digits seen from an isometric angle. Every lit
 // cell of a digit is a solid column, so the number itself is the raised
 // surface, with its walls falling away to the bottom of the screen. All four
-// digits share one plane; hours run along the back-left, minutes along the
-// front-right. The view is 2:1 pixel isometric.
+// digits share one plane in a diamond: hours on the top and right, minutes on
+// the left and bottom. The view is 2:1 pixel isometric.
 
 static const char *const WEEKDAYS[] = {
   "domingo", "segunda-feira", "terça-feira", "quarta-feira",
@@ -101,8 +101,12 @@ static void prv_draw_column(GBitmap *fb, GSize size, const Column *column) {
 
 static void prv_canvas_update_proc(Layer *layer, GContext *ctx) {
   // Ground position of each digit's bottom-left glyph cell.
+  // On screen the four digits form a diamond, read top, right, left, bottom.
   static const int16_t DIGIT_ORIGIN[4][2] = {
-    {0, 0}, {0, DIGIT_V + GAP}, {DIGIT_U + GAP, 0}, {DIGIT_U + GAP, DIGIT_V + GAP},
+    {0, DIGIT_V + GAP},              // hours tens: top
+    {DIGIT_U + GAP, DIGIT_V + GAP},  // hours ones: right
+    {0, 0},                          // minutes tens: left
+    {DIGIT_U + GAP, 0},              // minutes ones: bottom
   };
 
   Column columns[MAX_COLUMNS];
