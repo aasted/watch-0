@@ -8,12 +8,34 @@ Learning to build watch faces for the **Pebble Core 2 Duo** (SDK platform `flint
 Newest first. Screenshots come from the flint emulator and are refreshed by CI on every
 merge to `main`.
 
-| | |
-| --- | --- |
-| ![F-91W](screenshots/f91w.png) | **[F-91W](f91w)**: a homage to the Casio F-91W. A hand-drawn segment LCD with Portuguese abbreviated weekdays (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa), with custom "D" and "ª" glyphs in the day field like the original's own segment shapes. |
-| ![Elevação](screenshots/elevacao.png) | **[Elevação](elevacao)**: a nod to the "Elevation" face. The time is four block digits in 2:1 isometric on one plane. Every lit cell is a solid column, so the number itself is the raised surface. Mínimo's Portuguese weekday and date sit above. |
-| ![Mínimo](screenshots/minimal-pt.png) | **[Mínimo](minimal-pt)**: large time, a thin rule, then the weekday and date in Portuguese ("terça-feira", "27 de outubro"). |
-| ![Hello World](screenshots/hello-world.png) | **[Hello World](hello-world)**: "Hello, World!" plus the time, updated every minute. |
+### [F-91W](f91w)
+
+<img src="screenshots/f91w.png" width="288" alt="F-91W watch face">
+
+A homage to the Casio F-91W: a hand-drawn segment LCD with Portuguese abbreviated weekdays
+(Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa), with custom "D" and "ª" glyphs in the day field like the
+original's own segment shapes.
+
+### [Elevação](elevacao)
+
+<img src="screenshots/elevacao.png" width="288" alt="Elevação watch face">
+
+A nod to the "Elevation" face. The time is four block digits in 2:1 isometric on one plane.
+Every lit cell is a solid column, so the number itself is the raised surface. Mínimo's
+Portuguese weekday and date sit above.
+
+### [Mínimo](minimal-pt)
+
+<img src="screenshots/minimal-pt.png" width="288" alt="Mínimo watch face">
+
+Large time, a thin rule, then the weekday and date in Portuguese ("terça-feira",
+"27 de outubro").
+
+### [Hello World](hello-world)
+
+<img src="screenshots/hello-world.png" width="288" alt="Hello World watch face">
+
+"Hello, World!" plus the time, updated every minute.
 
 ## Build locally
 

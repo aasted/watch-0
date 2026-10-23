@@ -28,15 +28,17 @@ wrote the change does not review it.
 - **`targetPlatforms`:** `["flint"]`.
 - **`sdkVersion`:** `"3"`.
 - **UUID:** give each face its own.
-- `screenshots/<face>.png` holds the README gallery images.
+- `screenshots/<face>.png` holds the README gallery images: emulator screenshots upscaled 3×
+  by `tools/upscale.py`, so they stay sharp when shown large.
 
 ## Adding a face
 
 1. Copy an existing face's `wscript`. It silences the linker's RWX-segment warning, which is
    expected for Pebble apps.
 2. Add the folder to the `project` matrix in `.github/workflows/build.yml`.
-3. Add a row at the **top** of the README gallery (newest first). Also add
-   `screenshots/<face>.png`, captured at the fixed CI time `1793095740` (Tue 27 Oct 2026,
+3. Add a section at the **top** of the README gallery (newest first), copying an existing
+   one: heading, `<img ... width="288">`, then a short description. Also add
+   `screenshots/<face>.png` (run it through `tools/upscale.py`), captured at the fixed CI time `1793095740` (Tue 27 Oct 2026,
    10:09 UTC). The `gallery` job keeps the images up to date after each merge to `main`. Also
    check the other two CI times:
    - `1772920020` (Sat 7 Mar 2026, 21:47 UTC) has accented names: sábado, março.
