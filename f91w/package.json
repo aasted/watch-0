@@ -1,0 +1,22 @@
+{
+  "name": "f91w",
+  "author": "aasted",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "F-91W",
+    "uuid": "eba8b8e8-1305-41b6-ad2c-ec21f43d7d55",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["flint"],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [],
+    "resources": {
+      "media": []
+    }
+  }
+}
