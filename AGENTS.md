@@ -8,11 +8,18 @@ white, 4 buttons), written in C against the Pebble SDK.
 Every pull request must be reviewed by **another agent** before it is merged. The agent that
 wrote the change does not review it.
 
-- **The review:** start a separate agent and have it post its review on the PR as review
-  comments.
-- **Findings:** address every finding. Either fix it, or reply on the thread saying why it
-  stays as is. Then resolve the thread.
-- **Merging:** merge only once the review is handled and CI is green on the latest commit.
+- **The review:** start a separate agent and have it post one `COMMENT` review on the PR,
+  with line comments. GitHub doesn't allow approving or requesting changes on a PR opened by
+  the same account.
+- **Findings:** the authoring agent addresses every finding. Either fix it, or reply on the
+  thread saying why it stays as is. Then resolve the thread.
+- **Another pass:** if the fixes are substantial (new logic, not just nits), get a fresh
+  review of the new commits.
+- **Merging:** merge only when all of these hold:
+  - every review thread is handled
+  - the `build` job passed for every face in the matrix on the latest commit
+  - the face's screenshots were actually checked, in the run's artifact or locally. The
+    screenshot steps are best-effort, so a green run alone doesn't prove they ran.
 
 ## Layout
 
@@ -30,17 +37,24 @@ wrote the change does not review it.
 2. Add the folder to the `project` matrix in `.github/workflows/build.yml`.
 3. Add a row at the **top** of the README gallery (newest first). Also add
    `screenshots/<face>.png`, captured at the fixed CI time `1793095740` (Tue 27 Oct 2026,
-   10:09). The `gallery` job keeps the images up to date after each merge to `main`.
-4. Portuguese text is part of the house style: weekdays and months are hard-coded, not taken
-   from `strftime`.
+   10:09 UTC). The `gallery` job keeps the images up to date after each merge to `main`. Also
+   check the other two CI times:
+   - `1772920020` (Sat 7 Mar 2026, 21:47 UTC) has accented names: sábado, março.
+   - `1727740680` (Mon 30 Sep 2024, 23:58 UTC) has the widest weekday and date.
+4. Faces that show the date use hard-coded Portuguese weekday and month names, not
+   `strftime`.
 
 ## Build and check
 
 ```bash
+uv tool install pebble-tool==5.0.40 --python 3.13       # the version CI pins
+pebble sdk install latest
+
 cd <face>
 pebble build                                      # must finish with no warnings
 pebble install --emulator flint --vnc build/<face>.pbw
 pebble emu-set-time --emulator flint --vnc 1793095740   # after install: installing resets the clock
+sleep 3                                                 # let the face redraw, as CI does
 pebble screenshot --emulator flint --vnc --no-open shot.png
 ```
 
@@ -50,7 +64,8 @@ pebble screenshot --emulator flint --vnc --no-open shot.png
   responding" screen.
 - **Containers without IPv6:** pebble-tool's phone simulator fails to bind, and installs
   report "Connection refused". The local workaround is to change `("", self.port)` to
-  `("0.0.0.0", self.port)` in pebble-tool's `pypkjs/runner/websocket.py`.
+  `("0.0.0.0", self.port)` in pebble-tool's `pypkjs/runner/websocket.py`. A reinstall of
+  pebble-tool undoes it, so reapply it afterwards.
 
 ## Code conventions
 
