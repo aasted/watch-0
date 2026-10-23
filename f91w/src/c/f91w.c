@@ -3,9 +3,9 @@
 // F-91W: a homage to the Casio F-91W, with Portuguese abbreviated weekdays
 // (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa).
 //
-// The LCD is drawn by hand with tapered segments: seven-segment digits for the
-// time and date, and a richer alphanumeric segment set for the weekday field,
-// like the original's.
+// The LCD is drawn by hand with tapered segments. Digits are seven-segment;
+// the weekday field adds a half middle bar (for its "3") and custom "D" and
+// "ª" glyphs, as the original's day field has its own segment shapes.
 
 // Segment bits: a (top), b (top right), c (bottom right), d (bottom),
 // e (bottom left), f (top left), g (middle, in two halves).
@@ -36,14 +36,14 @@ static const uint16_t DIGIT_SEGMENTS[10] = {
 // Weekday characters can light just one half of the middle bar, and "D" and
 // "ª" are custom glyphs, as the original's day field has its own segment set.
 
-#define ALPHA_2 (SEG_A | SEG_B | SEG_G1 | SEG_G2 | SEG_E | SEG_D)
+#define ALPHA_2 (SEG_A | SEG_B | SEG_G | SEG_E | SEG_D)
 #define ALPHA_3 (SEG_A | SEG_B | SEG_G2 | SEG_C | SEG_D)
-#define ALPHA_4 (SEG_F | SEG_G1 | SEG_G2 | SEG_B | SEG_C)
-#define ALPHA_5 (SEG_A | SEG_F | SEG_G1 | SEG_G2 | SEG_C | SEG_D)
-#define ALPHA_6 (SEG_A | SEG_F | SEG_E | SEG_D | SEG_C | SEG_G1 | SEG_G2)
+#define ALPHA_4 (SEG_F | SEG_G | SEG_B | SEG_C)
+#define ALPHA_5 (SEG_A | SEG_F | SEG_G | SEG_C | SEG_D)
+#define ALPHA_6 (SEG_A | SEG_F | SEG_E | SEG_D | SEG_C | SEG_G)
 #define ALPHA_LOWER_A (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_G)
 #define ALPHA_LOWER_O (SEG_C | SEG_D | SEG_E | SEG_G)
-#define ALPHA_S (SEG_A | SEG_F | SEG_G1 | SEG_G2 | SEG_C | SEG_D)
+#define ALPHA_S ALPHA_5
 #define ALPHA_D 0xFFFE        // custom glyph
 #define ALPHA_ORDINAL 0xFFFF  // "ª", custom glyph
 
@@ -160,9 +160,8 @@ static void prv_draw_char(int x, int y, int w, int h, int t, uint16_t segments) 
 }
 
 // "ª": a small raised single-storey "a" over an underline, filling the same
-// box as a weekday character. A thinner stroke keeps the small "a" open.
-static void prv_draw_ordinal(int x, int y, int w, int h) {
-  const int t = 2;
+// box as a weekday character.
+static void prv_draw_ordinal(int x, int y, int w, int h, int t) {
   const int a_w = w - 4;
   const int a_h = h * 3 / 5;
   prv_draw_char(x + 2, y, a_w, a_h, t, ALPHA_LOWER_A);
@@ -197,7 +196,7 @@ static void prv_draw_weekday_char(int x, uint16_t segments) {
   if (segments == ALPHA_D) {
     prv_draw_letter_d(x, TOP_Y, SMALL_W, SMALL_H, SMALL_T);
   } else if (segments == ALPHA_ORDINAL) {
-    prv_draw_ordinal(x, TOP_Y, SMALL_W, SMALL_H);
+    prv_draw_ordinal(x, TOP_Y, SMALL_W, SMALL_H, SMALL_T);
   } else {
     prv_draw_char(x, TOP_Y, SMALL_W, SMALL_H, SMALL_T, segments);
   }
