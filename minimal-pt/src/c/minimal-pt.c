@@ -33,6 +33,15 @@ static void prv_update_time(struct tm *tick_time) {
 }
 
 static void prv_update_date(struct tm *tick_time) {
+  // Redraw whenever the calendar day differs from the one shown. DAY_UNIT alone
+  // misses backward clock changes (setting the time back, travelling west).
+  static int s_shown_day = -1;
+  const int day = tick_time->tm_year * 366 + tick_time->tm_yday;
+  if (day == s_shown_day) {
+    return;
+  }
+  s_shown_day = day;
+
   static char s_date_buffer[24];
   snprintf(s_date_buffer, sizeof(s_date_buffer), "%d de %s", tick_time->tm_mday, MONTHS[tick_time->tm_mon]);
   text_layer_set_text(s_day_layer, WEEKDAYS[tick_time->tm_wday]);
@@ -41,9 +50,7 @@ static void prv_update_date(struct tm *tick_time) {
 
 static void prv_tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   prv_update_time(tick_time);
-  if (units_changed & DAY_UNIT) {
-    prv_update_date(tick_time);
-  }
+  prv_update_date(tick_time);
 }
 
 static void prv_rule_update_proc(Layer *layer, GContext *ctx) {
