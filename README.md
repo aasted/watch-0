@@ -12,9 +12,9 @@ merge to `main`.
 
 <img src="screenshots/f91w.png" width="288" alt="F-91W watch face">
 
-A homage to the Casio F-91W: a hand-drawn segment LCD with Portuguese abbreviated weekdays
-(Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa), with custom "D" and "ª" glyphs in the day field like the
-original's own segment shapes.
+A homage to the classic F-91W digital watch: a hand-drawn segment LCD with Portuguese
+abbreviated weekdays (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa), with custom "D" and "ª" glyphs in the day
+field like the original's own segment shapes.
 
 ### [Elevação](elevacao)
 

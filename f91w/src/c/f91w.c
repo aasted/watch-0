@@ -1,7 +1,7 @@
 #include <pebble.h>
 
-// F-91W: a homage to the Casio F-91W, with Portuguese abbreviated weekdays
-// (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa).
+// F-91W: a homage to the classic F-91W digital watch, with Portuguese
+// abbreviated weekdays (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa).
 //
 // The LCD is drawn by hand with tapered segments. Digits are seven-segment;
 // the weekday field adds a half middle bar (for its "3") and custom "D" and
@@ -276,7 +276,6 @@ typedef struct {
 static const CaseLabel CASE_LABELS[] = {
   {{{6, 0}, {40, 12}}, "LIGHT", FONT_KEY_GOTHIC_09, GTextAlignmentLeft},
   {{{40, 0}, {98, 12}}, "ALARM CHRONOGRAPH", FONT_KEY_GOTHIC_09, GTextAlignmentRight},
-  {{{6, 10}, {80, 22}}, "CASIO", FONT_KEY_GOTHIC_18_BOLD, GTextAlignmentLeft},
   {{{6, 126}, {132, 14}}, "WATER  WR  RESIST", FONT_KEY_GOTHIC_09, GTextAlignmentCenter},
   {{{6, 146}, {40, 14}}, "MODE", FONT_KEY_GOTHIC_09, GTextAlignmentLeft},
   {{{40, 146}, {98, 14}}, "ALARM ON·OFF / 24HR", FONT_KEY_GOTHIC_09, GTextAlignmentRight},
