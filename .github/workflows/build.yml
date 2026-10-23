@@ -74,3 +74,38 @@ jobs:
             ${{ matrix.project }}/build/*.pbw
             ${{ matrix.project }}/screenshot-*.png
           if-no-files-found: warn
+
+  # On main, commit one screenshot per face (the Tue 27 Oct 10:09 one) to
+  # screenshots/ for the README gallery.
+  gallery:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Commit updated screenshots
+        run: |
+          mkdir -p screenshots
+          for dir in artifacts/*/; do
+            name=$(basename "$dir")
+            src="$dir/screenshot-flint-1793095740.png"
+            if [ -f "$src" ]; then
+              cp "$src" "screenshots/$name.png"
+            fi
+          done
+          git add screenshots
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898231+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update gallery screenshots [skip ci]"
+          git push

@@ -5,9 +5,9 @@
 //
 // The time is four 3x5 block digits seen from an isometric angle. Every lit
 // cell of a digit is a solid column, so the number itself is the raised
-// surface, with its walls falling away to the bottom of the screen. Hours run
-// along the back-left, minutes along the front-right, and each digit stands
-// higher the larger its value.
+// surface, with its walls falling away to the bottom of the screen. All four
+// digits share one plane; hours run along the back-left, minutes along the
+// front-right. The view is 2:1 pixel isometric.
 
 static const char *const WEEKDAYS[] = {
   "domingo", "segunda-feira", "terça-feira", "quarta-feira",
@@ -28,19 +28,18 @@ static const uint8_t GLYPHS[10][5] = {
 // Projection: ground point (u, v) maps to screen (OX + (u + v) * SX, OY + (u - v) * SY).
 // u runs down-right and is the glyph's left-to-right axis; v runs up-right and
 // is the glyph's bottom-to-top axis.
-#define SX 4
-#define SY 3
-#define OX 0
-#define OY 122
-#define CELL 2                          // edge of one glyph cell's column, in ground units
+#define SX 2
+#define SY 1
+#define OX 2
+#define OY 104
+#define CELL 4                          // edge of one glyph cell's column, in ground units
 #define DIGIT_U (3 * CELL)
 #define DIGIT_V (5 * CELL)
-#define GAP 2                           // ground units between digits
-#define STEP 1                          // pixels of elevation per unit of digit value
+#define GAP 3                           // ground units between digits
 #define MAX_COLUMNS (4 * 15)
 
 typedef struct {
-  int16_t u, v, height;
+  int16_t u, v;
 } Column;
 
 static Window *s_window;
@@ -66,12 +65,12 @@ static void prv_set_pixel(GBitmap *fb, int x, int y, bool white) {
   }
 }
 
-// Draws one glyph cell as a solid column: a white top face at the given height
+// Draws one glyph cell as a solid column: a white top face
 // and two walls (dithered and black) down to the bottom of the screen. Painter's order:
 // later calls draw over earlier ones.
 static void prv_draw_column(GBitmap *fb, GSize size, const Column *column) {
   const int bx = OX + (column->u + column->v) * SX;
-  const int by = OY + (column->u - column->v) * SY - column->height;
+  const int by = OY + (column->u - column->v) * SY;
 
   for (int dx = 0; dx < 2 * CELL * SX; dx++) {
     const int x = bx + dx;
@@ -116,7 +115,6 @@ static void prv_canvas_update_proc(Layer *layer, GContext *ctx) {
           columns[count++] = (Column) {
             .u = DIGIT_ORIGIN[i][0] + col * CELL,
             .v = DIGIT_ORIGIN[i][1] + (4 - row) * CELL,
-            .height = STEP * digit,
           };
         }
       }
