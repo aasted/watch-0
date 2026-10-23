@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [hello-world, minimal-pt]
+        project: [hello-world, minimal-pt, elevacao]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -52,6 +52,18 @@ jobs:
             pebble install --emulator flint --vnc build/*.pbw
             sleep 3
             pebble screenshot --emulator flint --vnc --no-open screenshot-flint-$t.png
+          done
+
+      # Also print the screenshots as base64 so they can be checked from the job log
+      # without downloading the artifact.
+      - name: Print screenshots
+        continue-on-error: true
+        run: |
+          for f in screenshot-*.png; do
+            echo "::group::$f"
+            base64 -w0 "$f"
+            echo
+            echo "::endgroup::"
           done
 
       - uses: actions/upload-artifact@v4

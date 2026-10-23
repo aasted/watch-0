@@ -1,0 +1,22 @@
+{
+  "name": "elevacao",
+  "author": "aasted",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Elevação",
+    "uuid": "3f28a256-0e1f-48fc-ae49-4b93b22d1a69",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["flint"],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [],
+    "resources": {
+      "media": []
+    }
+  }
+}
