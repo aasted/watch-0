@@ -10,7 +10,7 @@ merge to `main`.
 
 | | |
 | --- | --- |
-| ![F-91W](screenshots/f91w.png) | **[F-91W](f91w)**: a homage to the Casio F-91W. Hand-drawn seven-segment LCD with faint "ghost" segments, seconds, and Portuguese abbreviated weekdays: do, 2a, 3a, 4a, 5a, 6a, Sa. |
+| ![F-91W](screenshots/f91w.png) | **[F-91W](f91w)**: a homage to the Casio F-91W. A hand-drawn segment LCD with Portuguese abbreviated weekdays (Do, 2ª, 3ª, 4ª, 5ª, 6ª, Sa) built from their own custom segments, like the original's day field. |
 | ![Elevação](screenshots/elevacao.png) | **[Elevação](elevacao)**: a nod to the "Elevation" face. The time is four block digits in 2:1 isometric on one plane. Every lit cell is a solid column, so the number itself is the raised surface. Mínimo's Portuguese weekday and date sit above. |
 | ![Mínimo](screenshots/minimal-pt.png) | **[Mínimo](minimal-pt)**: large time, a thin rule, then the weekday and date in Portuguese ("terça-feira", "27 de outubro"). |
 | ![Hello World](screenshots/hello-world.png) | **[Hello World](hello-world)**: "Hello, World!" plus the time, updated every minute. |
