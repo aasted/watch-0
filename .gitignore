@@ -1,0 +1,17 @@
+# Ignore build generated files
+build/
+dist/
+dist.zip
+
+# Ignore waf lock file
+.lock-waf*
+
+# Ignore installed node modules
+node_modules/
+
+# Emulator screenshots and editor/OS clutter
+screenshot*.png
+compile_commands.json
+.DS_Store
+.vscode/
+.idea/
