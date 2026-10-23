@@ -7,8 +7,10 @@ static TextLayer *s_time_layer;
 static void prv_update_time(struct tm *tick_time) {
   // Must be static: the TextLayer keeps a pointer to this buffer.
   static char s_buffer[8];
-  strftime(s_buffer, sizeof(s_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
-  text_layer_set_text(s_time_layer, s_buffer);
+  const bool is_24h = clock_is_24h_style();
+  strftime(s_buffer, sizeof(s_buffer), is_24h ? "%H:%M" : "%I:%M", tick_time);
+  // Drop the leading zero in 12-hour mode ("9:41", not "09:41").
+  text_layer_set_text(s_time_layer, (!is_24h && s_buffer[0] == '0') ? s_buffer + 1 : s_buffer);
 }
 
 static void prv_tick_handler(struct tm *tick_time, TimeUnits units_changed) {

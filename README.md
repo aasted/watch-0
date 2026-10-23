@@ -23,6 +23,7 @@ pebble install --emulator flint       # try it in the emulator
 pebble install --phone <PHONE_IP>     # send to the watch (enable Developer Connection in the Pebble app)
 ```
 
-You don't need a local setup: every push runs `.github/workflows/build.yml`, which builds
-each project and uploads the `.pbw` (and an emulator screenshot when it works) as a run
-artifact. Open the `.pbw` on your phone with the Pebble app to install it.
+You don't need a local setup: every pull request and push to `main` runs
+`.github/workflows/build.yml`, which builds each project and uploads the `.pbw` (and
+emulator screenshots when they work) as a run artifact. The artifact downloads as a zip:
+unzip it, then open the `.pbw` on your phone with the Pebble app to install it.
