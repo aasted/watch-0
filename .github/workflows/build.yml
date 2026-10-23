@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # pebble-tool's bundled libpebble2 has old docstrings that trip Python 3.12+
+  # SyntaxWarnings on first import. They're upstream and harmless; hide them.
+  PYTHONWARNINGS: ignore::SyntaxWarning
+
 jobs:
   build:
     # Only build pull requests opened from branches in this repo. PRs from forks
@@ -18,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [hello-world, minimal-pt]
+        project: [hello-world, minimal-pt, elevacao]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -42,16 +47,30 @@ jobs:
       # 1793095740 = Tue 27 Oct 2026 10:09 UTC (terça, outubro),
       # 1772920020 = Sat 7 Mar 2026 21:47 UTC (sábado, março),
       # 1727740680 = Mon 30 Sep 2024 23:58 UTC (segunda-feira, 30 de setembro: widest text).
-      # The clock is set before each install so the face draws that time on launch.
+      # The clock is set after installing (installing resyncs it to the host clock); the
+      # time change fires the face's tick handler, which redraws at the new time.
       - name: Screenshots in emulator (best effort)
         continue-on-error: true
         timeout-minutes: 5
         run: |
           for t in 1793095740 1772920020 1727740680; do
-            pebble emu-set-time --emulator flint --vnc $t
             pebble install --emulator flint --vnc build/*.pbw
+            pebble emu-set-time --emulator flint --vnc $t
             sleep 3
             pebble screenshot --emulator flint --vnc --no-open screenshot-flint-$t.png
+          done
+
+      # Also print the screenshots as base64 so they can be checked from the job log
+      # without downloading the artifact.
+      - name: Print screenshots
+        continue-on-error: true
+        run: |
+          shopt -s nullglob
+          for f in screenshot-*.png; do
+            echo "::group::$f"
+            base64 -w0 "$f"
+            echo
+            echo "::endgroup::"
           done
 
       - uses: actions/upload-artifact@v4
@@ -61,3 +80,43 @@ jobs:
             ${{ matrix.project }}/build/*.pbw
             ${{ matrix.project }}/screenshot-*.png
           if-no-files-found: warn
+
+  # On main, commit one screenshot per face (the Tue 27 Oct 10:09 one) to
+  # screenshots/ for the README gallery.
+  gallery:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # One gallery update at a time; each rebases onto the latest main before pushing.
+    concurrency:
+      group: gallery
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Commit updated screenshots
+        run: |
+          mkdir -p screenshots
+          for dir in artifacts/*/; do
+            name=$(basename "$dir")
+            src="$dir/screenshot-flint-1793095740.png"
+            if [ -f "$src" ]; then
+              cp "$src" "screenshots/$name.png"
+            fi
+          done
+          git add screenshots
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898231+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update gallery screenshots [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
