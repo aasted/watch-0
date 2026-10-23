@@ -1,0 +1,61 @@
+name: Build watchfaces
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # Only build pull requests opened from branches in this repo. PRs from forks
+    # are skipped so outside contributors can't run code on our runners.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [hello-world]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libfdt1 libpixman-1-0 nodejs
+
+      - name: Install pebble-tool and SDK
+        run: |
+          uv tool install pebble-tool==5.0.40 --python 3.13
+          pebble sdk install latest
+
+      - name: Build
+        run: pebble build
+
+      # Fixed clock times so screenshots are reproducible:
+      # 1793095740 = Tue 27 Oct 2026 10:09 UTC, 1772920020 = Sat 7 Mar 2026 21:47 UTC.
+      # The clock is set before each install so the face draws that time on launch.
+      - name: Screenshots in emulator (best effort)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          for t in 1793095740 1772920020; do
+            pebble emu-set-time --emulator flint --vnc $t
+            pebble install --emulator flint --vnc build/*.pbw
+            sleep 3
+            pebble screenshot --emulator flint --vnc --no-open screenshot-flint-$t.png
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}
+          path: |
+            ${{ matrix.project }}/build/*.pbw
+            ${{ matrix.project }}/screenshot-*.png
+          if-no-files-found: warn

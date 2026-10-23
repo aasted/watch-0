@@ -1,0 +1,22 @@
+{
+  "name": "hello-world",
+  "author": "aasted",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Hello World",
+    "uuid": "9409f212-5477-43af-9e5a-3fd7d29a59dd",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["flint"],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [],
+    "resources": {
+      "media": []
+    }
+  }
+}
