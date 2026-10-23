@@ -9,7 +9,7 @@ Learning to build watch faces for the **Pebble Core 2 Duo** (SDK platform `flint
 | --- | --- |
 | [`hello-world/`](hello-world) | Minimal watch face: "Hello, World!" plus the time, updated every minute. |
 | [`minimal-pt/`](minimal-pt) | **Mínimo**: minimalist face with large time, a thin rule, then the weekday and date in Portuguese ("terça-feira", "27 de outubro"). |
-| [`elevacao/`](elevacao) | **Elevação**: Mínimo's Portuguese date over the time drawn as four isometric blocks on pillars, a nod to the "Elevation" face. Each pillar is raised by its digit's value. |
+| [`elevacao/`](elevacao) | **Elevação**: a nod to the "Elevation" face. The time is drawn as raised isometric block digits (the number itself is the elevated surface) under Mínimo's Portuguese weekday and date. Each digit stands taller the larger its value. |
 
 ## Build locally
 
