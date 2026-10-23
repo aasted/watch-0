@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [hello-world, minimal-pt, elevacao]
+        project: [hello-world, minimal-pt, elevacao, f91w]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
